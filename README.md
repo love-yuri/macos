@@ -1,8 +1,16 @@
 # macOS Tahoe · MSI A520M-A PRO / Ryzen 5 5600GT
 
-本机正在使用的 OpenCore EFI，适用于 **Ryzen 5 5600GT + 微星 A520M-A PRO + Vega 核显**，当前系统为 **macOS Tahoe 26.7.2（25G332）**。完整硬件信息见 [hardware.md](hardware.md)。
+适用于 **Ryzen 5 5600GT + 微星 A520M-A PRO + Vega 核显** 的 OpenCore EFI，已在 **macOS Tahoe 26.7.2（25G332）** 上使用。完整硬件信息见 [hardware.md](hardware.md)。
 
-截至 2026-11-01，机主已实测：**核显驱动与图形加速、2K 144Hz 显示、板载 3.5mm 模拟音频均正常工作**。其他功能未逐项验证。
+## 已验证功能
+
+以下功能于 2026-11-01 实测正常：
+
+| 功能 | 状态 |
+| --- | --- |
+| Vega 核显驱动与图形加速 | 正常 |
+| 2K 144Hz 显示输出 | 正常 |
+| ALC897 板载 3.5mm 模拟音频 | 正常 |
 
 ## 目录
 
@@ -16,22 +24,17 @@
 └── .gitignore
 ```
 
-## 来源与改动
+## 配置要点
 
-最初引导来自安装 U 盘 `/Volumes/TAHOE_USB/EFI`；本仓库以系统实际使用的 `/Volumes/EFI/EFI` 为准整理。
-
-在初始 EFI 上增加的音频修复：
-
-- 添加 **AppleALC 1.9.8** 和 **SimpleHDA 1.0.0**，启用范围为 Darwin 25（Tahoe）。
-- 音频相关加载顺序保持 **Lilu → NootedRed → AppleALC → SimpleHDA**，其间原有基础驱动保留。
-- 启动参数加入 **`alcid=11`**，对应本机 ALC897 的当前可用配置。SimpleHDA 用于恢复 Tahoe 所需的传统 HDA 音频栈。
-
-原有引导、ACPI 和其他驱动保持系统 EFI 的内容。整理时去除旧配置备份、日志和 macOS 隐藏文件，并清空 SMBIOS 机器标识；原始 U 盘和系统 EFI 均未修改。
+- **引导与核显**：OpenCore 1.0.8、AMD Vanilla 内核补丁（6 核）、NootedRed 0.8.10。
+- **音频修复**：加入 AppleALC 1.9.8 和 SimpleHDA 1.0.0，启用范围为 Darwin 25（Tahoe）。SimpleHDA 恢复传统 HDA 音频栈，启动参数 `alcid=11` 用于 ALC897。
+- **加载顺序**：Lilu → NootedRed → AppleALC → SimpleHDA，避免 NootedRed 与音频插件的加载冲突。
+- **基础配置**：包含 EC-USBX、CPUR、USB Reset ACPI，以及 VirtualSMC、RealtekRTL8111、RestrictEvents 等驱动。
 
 ## 使用
 
 1. 先备份自己的 EFI，并保留可启动的安装 U 盘。
-2. 在 `EFI/OC/config.plist` 的 `PlatformInfo → Generic` 中填写自己生成的 **SystemSerialNumber、MLB、SystemUUID、ROM**。仓库已移除本机标识，使用 [GenSMBIOS](https://github.com/corpnewt/GenSMBIOS) 为 **MacPro7,1** 生成独立标识，并按[官方说明](https://dortania.github.io/OpenCore-Install-Guide/AMD/zen.html#platforminfo)填写 ROM。
+2. 在 `EFI/OC/config.plist` 的 `PlatformInfo → Generic` 中填写自己生成的 **SystemSerialNumber、MLB、SystemUUID、ROM**。这些字段需要自行填写，使用 [GenSMBIOS](https://github.com/corpnewt/GenSMBIOS) 为 **MacPro7,1** 生成独立标识，并按[官方说明](https://dortania.github.io/OpenCore-Install-Guide/AMD/zen.html#platforminfo)填写 ROM。
 3. 用 **OpenCore 1.0.8** 随附的 `ocvalidate` 检查配置，将整个 `EFI/` 文件夹复制到目标 EFI 分区。先从 U 盘测试，再替换硬盘引导。
 
 AMD 内核补丁的物理核心数为 **6**；更换 CPU 时需要调整。`NVMeFix` 当前关闭，`HoRNDIS` 保持启用（Android USB 网络共享，Tahoe 下兼容性需自行确认）。睡眠、全部 USB 端口和其他接口未逐项验证；AIC 8800D80 USB 无线网卡的驱动不包含在本 EFI 中，安装时建议使用有线网络。
