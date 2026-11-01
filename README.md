@@ -19,10 +19,13 @@
 ├── EFI/
 │   ├── BOOT/
 │   └── OC/
+├── aic8800d80/       # AIC8800D80 USB 无线网卡驱动与工具
 ├── hardware.md
 ├── README.md
 └── .gitignore
 ```
+
+[aic8800d80/](aic8800d80/) 提供无线网卡驱动，目前能连接 Wi-Fi 并上网，尚未适配 macOS 原生 Wi-Fi 接口及菜单；编译和使用方法见该目录的 README。
 
 ## 配置要点
 
@@ -37,7 +40,7 @@
 2. 在 `EFI/OC/config.plist` 的 `PlatformInfo → Generic` 中填写自己生成的 **SystemSerialNumber、MLB、SystemUUID、ROM**。这些字段需要自行填写，使用 [GenSMBIOS](https://github.com/corpnewt/GenSMBIOS) 为 **MacPro7,1** 生成独立标识，并按[官方说明](https://dortania.github.io/OpenCore-Install-Guide/AMD/zen.html#platforminfo)填写 ROM。
 3. 用 **OpenCore 1.0.8** 随附的 `ocvalidate` 检查配置，将整个 `EFI/` 文件夹复制到目标 EFI 分区。先从 U 盘测试，再替换硬盘引导。
 
-AMD 内核补丁的物理核心数为 **6**；更换 CPU 时需要调整。`NVMeFix` 当前关闭，`HoRNDIS` 保持启用（Android USB 网络共享，Tahoe 下兼容性需自行确认）。睡眠、全部 USB 端口和其他接口未逐项验证；AIC 8800D80 USB 无线网卡的驱动不包含在本 EFI 中，安装时建议使用有线网络。
+AMD 内核补丁的物理核心数为 **6**；更换 CPU 时需要调整。`NVMeFix` 当前关闭，`HoRNDIS` 保持启用（Android USB 网络共享，Tahoe 下兼容性需自行确认）。睡眠、全部 USB 端口和其他接口未逐项验证；AIC8800D80 无线驱动需要在 macOS 中单独运行，安装时建议使用有线网络。
 
 ## 镜像下载
 

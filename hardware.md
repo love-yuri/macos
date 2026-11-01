@@ -13,7 +13,7 @@
 | SSD | 梵想 Fanxiang S500Pro 512GB NVMe，系统容量约 476.9GiB |
 | NVMe 控制器 | YEESTOR，设备 ID `1d89:ef25` |
 | 有线网卡 | Realtek RTL8111 / RTL8168 系列千兆网卡，`10ec:8168` |
-| USB 无线网卡 | AIC 8800D80，USB ID `a69c:8d81`；驱动不包含在本 EFI 内 |
+| USB 无线网卡 | AIC 8800D80，USB ID `a69c:8d81`；[用户态无线驱动](aic8800d80/)需在 macOS 中单独运行 |
 | 板载音频 | Realtek ALC897，Codec ID `10ec:0897`；AMD HDA 控制器 `1022:15e3` |
 | HDMI / DP 音频控制器 | AMD Renoir / Cezanne，`1002:1637` |
 | 当前系统 | macOS Tahoe 26.7.2（25G332） |
