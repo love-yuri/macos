@@ -179,22 +179,19 @@ def uninstall():
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=["install", "uninstall", "start", "stop", "restart", "status", "preview"])
-    parser.add_argument("--ssid", help="Wi-Fi network name (required for install/preview)")
-    parser.add_argument("--location", help="USB location from aicusb list (required for install/preview)")
+    parser.add_argument("--ssid", default="2-1501-5G")
+    parser.add_argument("--location", default="0x00b00000")
     parser.add_argument("--replace-credential", action="store_true")
     args = parser.parse_args()
-    if args.action in ("install", "preview"):
-        if not args.ssid or not args.location:
-            parser.error("install/preview require --ssid NAME and --location ID (see aicusb list)")
-        if not 1 <= len(args.ssid.encode("utf-8")) <= 32:
-            parser.error("SSID must contain 1-32 UTF-8 bytes")
-        try:
-            value = int(args.location, 0)
-            if not 0 < value <= 0xffffffff:
-                raise ValueError()
-        except ValueError:
-            parser.error("Invalid USB location")
-        args.location = "0x%08x" % value
+    if not 1 <= len(args.ssid.encode("utf-8")) <= 32:
+        parser.error("SSID must contain 1-32 UTF-8 bytes")
+    try:
+        value = int(args.location, 0)
+        if not 0 < value <= 0xffffffff:
+            raise ValueError()
+    except ValueError:
+        parser.error("Invalid USB location")
+    args.location = "0x%08x" % value
     if args.action == "preview":
         sys.stdout.buffer.write(plistlib.dumps(service_plist(args.ssid, args.location)))
         return
